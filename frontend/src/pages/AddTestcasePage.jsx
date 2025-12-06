@@ -67,7 +67,6 @@ export default function AddTestcasePage() {
           >
             <option value="PASSED">PASSED</option>
             <option value="FAILED">FAILED</option>
-            <option value="BLOCKED">BLOCKED</option>
           </select>
         </div>
 
