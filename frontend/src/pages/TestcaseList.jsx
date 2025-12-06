@@ -1,40 +1,40 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
-function TestcaseList() {
+export default function TestcaseList() {
   const [testcases, setTestcases] = useState([]);
 
-  // Fetch data dari backend
   useEffect(() => {
     fetch("http://localhost:4000/api/testcases")
       .then((res) => res.json())
       .then((data) => setTestcases(data))
-      .catch((err) => console.error("Error fetching:", err));
+      .catch((err) => console.error("Fetch Error:", err));
   }, []);
 
+  const handleDelete = async (id) => {
+    if (!confirm("Are you sure you want to delete this testcase?")) return;
+
+    await fetch(`http://localhost:4000/api/testcases/${id}`, {
+      method: "DELETE",
+    });
+
+    setTestcases(testcases.filter((t) => t.id !== id));
+  };
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Testcase List</h1>
+    <div className="p-6 max-w-5xl mx-auto">
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">
+        Testcases
+      </h1>
 
-        <Link
-          to="/create"
-          className="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700"
-        >
-          + New Testcase
-        </Link>
-      </div>
-
-      {/* TABLE */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-          <thead className="bg-gray-100 border-b">
-            <tr>
-              <th className="p-3 text-left">ID</th>
-              <th className="p-3 text-left">Title</th>
-              <th className="p-3 text-left">Description</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Actions</th>
+      <div className="bg-white shadow-lg rounded-xl p-6 border border-gray-200">
+        <table className="w-full border-collapse">
+          <thead>
+            <tr className="bg-gray-100 text-left border-b">
+              <th className="p-3 font-semibold text-gray-700">ID</th>
+              <th className="p-3 font-semibold text-gray-700">Title</th>
+              <th className="p-3 font-semibold text-gray-700">Description</th>
+              <th className="p-3 font-semibold text-gray-700">Status</th>
+              <th className="p-3 font-semibold text-gray-700">Actions</th>
             </tr>
           </thead>
 
@@ -42,49 +42,49 @@ function TestcaseList() {
             {testcases.map((tc) => (
               <tr key={tc.id} className="border-b hover:bg-gray-50">
                 <td className="p-3">{tc.id}</td>
-                <td className="p-3 font-medium">{tc.title}</td>
-                <td className="p-3">{tc.description}</td>
+                <td className="p-3 font-medium text-gray-800">{tc.title}</td>
+                <td className="p-3 text-gray-700">{tc.description}</td>
+
                 <td className="p-3">
                   <span
-                    className={`px-2 py-1 rounded text-white ${
+                    className={
                       tc.status === "PASSED"
-                        ? "bg-green-600"
-                        : tc.status === "FAILED"
-                        ? "bg-red-600"
-                        : "bg-gray-500"
-                    }`}
+                        ? "px-2 py-1 text-sm bg-green-100 text-green-700 rounded-lg"
+                        : "px-2 py-1 text-sm bg-red-100 text-red-700 rounded-lg"
+                    }
                   >
                     {tc.status}
                   </span>
                 </td>
 
-                <td className="p-3 flex gap-3">
-                  <button className="px-3 py-1 text-sm bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                <td className="p-3 space-x-2">
+                  <button
+                    onClick={() =>
+                      (window.location.href = `/testcases/edit/${tc.id}`)
+                    }
+                    className="px-3 py-1 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
+                  >
                     Edit
                   </button>
 
-                  <button className="px-3 py-1 text-sm bg-red-600 text-white rounded hover:bg-red-700">
+                  <button
+                    onClick={() => handleDelete(tc.id)}
+                    className="px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                  >
                     Delete
                   </button>
                 </td>
               </tr>
             ))}
-
-            {testcases.length === 0 && (
-              <tr>
-                <td
-                  colSpan="5"
-                  className="text-center p-4 text-gray-500 italic"
-                >
-                  No testcases found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
+
+        {testcases.length === 0 && (
+          <p className="text-center text-gray-500 py-6">
+            No testcases found.
+          </p>
+        )}
       </div>
     </div>
   );
 }
-
-export default TestcaseList;

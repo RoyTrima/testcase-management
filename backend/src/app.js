@@ -9,10 +9,33 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // Enable CORS
+// app.use(cors({
+//   origin: "http://localhost:5173",
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+// }));
+
+// spesific port
+// const allowedOrigins = [
+//   "http://localhost:5173",
+//   "http://localhost:5177"
+// ];
+
+// app.use(cors({
+//   origin: function (origin, callback) {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+// }));
+
 app.use(cors({
-  origin: "http://localhost:5173",
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 }));
+
 
 // Middleware JSON
 app.use(express.json());

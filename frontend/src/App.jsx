@@ -1,23 +1,30 @@
-import { Routes, Route, Link } from "react-router-dom";
-import TestcaseList from "./pages/TestcaseList";
-import CreateTestcase from "./pages/CreateTestcase";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
+import TestcasesPage from "./pages/TestcasesPage";
+import AddTestcasePage from "./pages/AddTestcasePage";
+import EditTestcasePage from "./pages/EditTestcasePage";
 
 function App() {
   return (
-    <div className="p-6">
+    <Router>
+      <div>
+        <nav style={{ padding: "10px", borderBottom: "1px solid #ccc" }}>
+          <Link to="/testcases">
+            <button>Testcases</button>
+          </Link>
 
-      {/* Navbar Simple */}
-      <nav className="mb-6 flex gap-4 border-b pb-4">
-        <Link to="/" className="text-blue-600">Testcases</Link>
-        <Link to="/create" className="text-blue-600">Create Testcase</Link>
-      </nav>
+          <Link to="/testcases/add" style={{ marginLeft: "10px" }}>
+            <button>Add Testcase</button>
+          </Link>
+        </nav>
 
-      {/* Routing */}
-      <Routes>
-        <Route path="/" element={<TestcaseList />} />
-        <Route path="/create" element={<CreateTestcase />} />
-      </Routes>
-    </div>
+        <Routes>
+          <Route path="/testcases" element={<TestcasesPage />} />
+          <Route path="/testcases/add" element={<AddTestcasePage />} />
+          <Route path="/testcases/edit/:id" element={<EditTestcasePage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
