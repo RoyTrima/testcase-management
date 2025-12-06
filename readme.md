@@ -41,3 +41,11 @@ atau ulangi
 lsof -i :5174
 kill -9 PID
 
+team bisa clone dari 
+git checkout master
+git pull
+
+yang belum clone
+git clone <repo-url>
+git checkout master
+
