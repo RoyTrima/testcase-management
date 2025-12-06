@@ -49,3 +49,6 @@ yang belum clone
 git clone <repo-url>
 git checkout master
 
+
+update table dari root project
+psql -h localhost -p 5433 -U app -d tcm -f infra/db-init/01_create_tables.sql

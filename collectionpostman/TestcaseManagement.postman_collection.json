@@ -1,0 +1,108 @@
+{
+    "info": {
+      "name": "Testcase Management API",
+      "_postman_id": "abcd1234-5678-efgh-9101-ijklmnopqrst",
+      "description": "Collection untuk testing API Testcase Management dengan JWT auth",
+      "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+      {
+        "name": "Register User",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"username\": \"user1\",\n    \"password\": \"secret123\"\n}"
+          },
+          "url": { "raw": "http://localhost:4000/api/auth/register", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","auth","register"] }
+        },
+        "response": []
+      },
+      {
+        "name": "Login User",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "var jsonData = pm.response.json();",
+                "pm.collectionVariables.set('TOKEN', jsonData.token);",
+                "console.log('Token saved:', jsonData.token);"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"username\": \"user1\",\n    \"password\": \"secret123\"\n}"
+          },
+          "url": { "raw": "http://localhost:4000/api/auth/login", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","auth","login"] }
+        },
+        "response": []
+      },
+      {
+        "name": "Get Testcases",
+        "request": {
+          "method": "GET",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+          ],
+          "url": { "raw": "http://localhost:4000/api/testcases", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","testcases"] }
+        },
+        "response": []
+      },
+      {
+        "name": "Create Testcase",
+        "request": {
+          "method": "POST",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"title\": \"TC Login Valid\",\n    \"description\": \"User bisa login dengan credential valid\",\n    \"status\": \"PASSED\"\n}"
+          },
+          "url": { "raw": "http://localhost:4000/api/testcases", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","testcases"] }
+        },
+        "response": []
+      },
+      {
+        "name": "Update Testcase",
+        "request": {
+          "method": "PUT",
+          "header": [
+            { "key": "Content-Type", "value": "application/json" },
+            { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n    \"title\": \"TC Login Updated\",\n    \"description\": \"Deskripsi diupdate\",\n    \"status\": \"FAILED\"\n}"
+          },
+          "url": { "raw": "http://localhost:4000/api/testcases/1", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","testcases","1"] }
+        },
+        "response": []
+      },
+      {
+        "name": "Delete Testcase",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            { "key": "Authorization", "value": "Bearer {{TOKEN}}" }
+          ],
+          "url": { "raw": "http://localhost:4000/api/testcases/1", "protocol": "http", "host": ["localhost"], "port": "4000", "path": ["api","testcases","1"] }
+        },
+        "response": []
+      }
+    ]
+  }
+  

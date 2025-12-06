@@ -2,55 +2,33 @@ import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
+import authRoutes from './routes/authRoutes.js';
+import loginRoutes from "./routes/loginRoutes.js";
+import testcaseRoutes from "./routes/testcaseRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Enable CORS
-// app.use(cors({
-//   origin: "http://localhost:5173",
-//   methods: ["GET", "POST", "PUT", "DELETE"],
-// }));
-
-// spesific port
-// const allowedOrigins = [
-//   "http://localhost:5173",
-//   "http://localhost:5177"
-// ];
-
-// app.use(cors({
-//   origin: function (origin, callback) {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-// }));
-
+// CORS
 app.use(cors({
   origin: "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 }));
-
 
 // Middleware JSON
 app.use(express.json());
 
-// Serve static frontend (optional, khusus HTML login)
+// Serve static frontend
 app.use(express.static(path.join(__dirname, "../../frontend")));
 
 // Routes
-import loginRoutes from "./routes/loginRoutes.js";
+app.use('/api/auth', authRoutes);       // <-- benar urutannya
 app.use("/api/login", loginRoutes);
-
-import testcaseRoutes from "./routes/testcaseRoutes.js";
 app.use("/api/testcases", testcaseRoutes);
 
-// Default to login page (HTML)
+// Default to login page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../../frontend/pages/login.html"));
 });
