@@ -12,7 +12,7 @@ export default function EditTestcasePage({ token }) {
   useEffect(() => {
     const fetchTestcase = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/testcases/${id}`, {
+        const res = await fetch(`/api/testcases/${id}`, {
           headers: { "Authorization": `Bearer ${token}` },
         });
         const data = await res.json();
@@ -33,7 +33,7 @@ export default function EditTestcasePage({ token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`http://localhost:4000/api/testcases/${id}`, {
+      const res = await fetch(`/api/testcases/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -59,27 +59,14 @@ export default function EditTestcasePage({ token }) {
       <h1 className="text-2xl font-bold mb-4">Edit Testcase</h1>
       {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <input
-          type="text"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded"
-        />
-        <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 rounded"
-        />
+        <input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} className="border p-2 rounded" />
+        <textarea placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)} className="border p-2 rounded" />
         <select value={status} onChange={(e) => setStatus(e.target.value)} className="border p-2 rounded">
           <option value="draft">Draft</option>
           <option value="PASSED">PASSED</option>
           <option value="FAILED">FAILED</option>
         </select>
-        <button type="submit" className="bg-green-500 text-white p-2 rounded mt-2">
-          Update
-        </button>
+        <button type="submit" className="bg-green-500 text-white p-2 rounded mt-2">Update</button>
       </form>
     </div>
   );

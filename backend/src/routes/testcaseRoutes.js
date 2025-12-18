@@ -1,6 +1,6 @@
 import express from 'express';
-import { getTestcases, createTestcase, updateTestcase, deleteTestcase } from '../controllers/testcaseController.js';
-import authMiddleware from '../middleware/auth.js';  // pastikan middleware JWT
+import { getTestcases, getTestcaseById, createTestcase, updateTestcase, deleteTestcase } from '../controllers/testcaseController.js';
+import authMiddleware from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -8,6 +8,7 @@ const router = express.Router();
 router.use(authMiddleware);
 
 router.get('/', getTestcases);
+router.get('/:id', getTestcaseById);
 router.post('/', createTestcase);
 router.put('/:id', updateTestcase);
 router.delete('/:id', deleteTestcase);

@@ -2,6 +2,8 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../db/index.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const router = express.Router();
 
@@ -31,7 +33,7 @@ router.post('/login', async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ error: 'Wrong password' });
 
-    const token = jwt.sign({ id: user.id, username: user.username }, 'secretkey');
+    const token = jwt.sign({ id: user.id, username: user.username }, process.env.JWT_SECRET || 'secretkey');
     res.json({ token });
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -11,7 +11,7 @@ export default function AddTestcasePage({ token }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:4000/api/testcases", {
+      const res = await fetch("/api/testcases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

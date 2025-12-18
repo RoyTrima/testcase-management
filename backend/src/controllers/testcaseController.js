@@ -13,6 +13,21 @@ export const getTestcases = async (req, res) => {
   }
 };
 
+// Get single testcase by ID
+export const getTestcaseById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query(
+      'SELECT * FROM testcases WHERE id=$1 AND created_by=$2',
+      [id, req.user.id]
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Not found' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Create testcase
 export const createTestcase = async (req, res) => {
   try {
@@ -34,9 +49,11 @@ export const updateTestcase = async (req, res) => {
     const { id } = req.params;
     const { title, description, status } = req.body;
     const result = await pool.query(
-      `UPDATE testcases SET title=$1, description=$2, status=$3 WHERE id=$4 AND created_by=$5 RETURNING *`,
+      `UPDATE testcases SET title=$1, description=$2, status=$3 
+       WHERE id=$4 AND created_by=$5 RETURNING *`,
       [title, description, status, id, req.user.id]
     );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Not found' });
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });

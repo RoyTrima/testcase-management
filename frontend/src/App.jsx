@@ -1,35 +1,37 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 
 import LoginPage from "./pages/LoginPage";
+import ProjectsPage from "./pages/ProjectsPage";
+import SuitesPage from "./pages/SuitesPage";
 import TestcasesPage from "./pages/TestcasesPage";
 import AddTestcasePage from "./pages/AddTestcasePage";
 import EditTestcasePage from "./pages/EditTestcasePage";
 
-function App() {
-  const [token, setToken] = useState(localStorage.getItem("token") || null);
+export default function App() {
+  const [token, setToken] = useState(null);
 
-  const handleLogin = (token) => {
-    localStorage.setItem("token", token);
-    setToken(token);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setToken(null);
+  const handleLogin = (jwtToken) => {
+    setToken(jwtToken);
+    console.log("User logged in! Token:", jwtToken);
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-        <Route path="/testcases" element={token ? <TestcasesPage token={token} onLogout={handleLogout} /> : <Navigate to="/login" />} />
-        <Route path="/testcases/add" element={token ? <AddTestcasePage token={token} /> : <Navigate to="/login" />} />
-        <Route path="/testcases/edit/:id" element={token ? <EditTestcasePage token={token} /> : <Navigate to="/login" />} />
-        <Route path="*" element={<Navigate to={token ? "/testcases" : "/login"} />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+
+      {/* step 1: project list */}
+      <Route path="/projects" element={<ProjectsPage token={token} />} />
+
+      {/* step 2: suite list */}
+      <Route path="/projects/:projectId/suites" element={<SuitesPage token={token} />} />
+
+      {/* step 3: testcase list */}
+      <Route path="/suites/:suiteId/testcases" element={<TestcasesPage token={token} />} />
+
+      {/* add/edit testcase */}
+      <Route path="/suites/:suiteId/testcases/add" element={<AddTestcasePage token={token} />} />
+      <Route path="/suites/:suiteId/testcases/edit/:testcaseId" element={<EditTestcasePage token={token} />} />
+    </Routes>
   );
 }
-
-export default App;
