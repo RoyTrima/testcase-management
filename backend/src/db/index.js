@@ -1,6 +1,9 @@
-// backend/src/db/index.js
-const { Pool } = require('pg');
-require('dotenv').config();
+import pkg from "pg";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const { Pool } = pkg;
 
 const pool = new Pool({
   host: process.env.DB_HOST,
@@ -10,16 +13,4 @@ const pool = new Pool({
   database: process.env.DB_NAME,
 });
 
-pool.on('connect', () => {
-  console.log('Connected to the database');
-});
-
-pool.on('error', (err) => {
-  console.error('Unexpected error on idle client', err);
-  process.exit(-1);
-});
-
-module.exports = {
-  query: (text, params) => pool.query(text, params),
-  pool, // kalau perlu akses langsung ke pool
-};
+export default pool;

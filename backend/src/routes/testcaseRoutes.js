@@ -1,16 +1,19 @@
-import express from 'express';
-import { getTestcases, getTestcaseById, createTestcase, updateTestcase, deleteTestcase } from '../controllers/testcaseController.js';
-import authMiddleware from '../middleware/auth.js';
+import express from "express";
+import auth from "../middleware/auth.js";
+import {
+  getTestcases,
+  getTestcaseById,
+  createTestcase,
+  updateTestcase,
+  deleteTestcase,
+} from "../controllers/testcaseController.js";
 
 const router = express.Router();
 
-// Semua route butuh login
-router.use(authMiddleware);
-
-router.get('/', getTestcases);
-router.get('/:id', getTestcaseById);
-router.post('/', createTestcase);
-router.put('/:id', updateTestcase);
-router.delete('/:id', deleteTestcase);
+router.get("/", auth, getTestcases);
+router.get("/:id", auth, getTestcaseById);
+router.post("/", auth, createTestcase);
+router.put("/:id", auth, updateTestcase);
+router.delete("/:id", auth, deleteTestcase);
 
 export default router;

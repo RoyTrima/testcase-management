@@ -1,75 +1,74 @@
-import pool from '../db/index.js';
+import pool from "../db/index.js";
 
-// Get all testcases by user
+// GET all
 export const getTestcases = async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT * FROM testcases WHERE created_by = $1',
-      [req.user.id]
-    );
-    res.json(result.rows);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const result = await pool.query("SELECT * FROM testcases ORDER BY id");
+  res.json(result.rows);
 };
 
-// Get single testcase by ID
+// GET by id
 export const getTestcaseById = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const result = await pool.query(
-      'SELECT * FROM testcases WHERE id=$1 AND created_by=$2',
-      [id, req.user.id]
-    );
-    if (!result.rows[0]) return res.status(404).json({ error: 'Not found' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { id } = req.params;
+  const result = await pool.query(
+    "SELECT * FROM testcases WHERE id = $1",
+    [id]
+  );
+  res.json(result.rows[0]);
 };
 
-// Create testcase
+// CREATE
+// export const createTestcase = async (req, res) => {
+//   const { title, suite_id } = req.body;
+//   const result = await pool.query(
+//     "INSERT INTO testcases (title, suite_id) VALUES ($1, $2) RETURNING *",
+//     [title, suite_id]
+//   );
+//   res.status(201).json(result.rows[0]);
+// };
 export const createTestcase = async (req, res) => {
+  const { suite_id, title, description, expected_result, severity, priority } = req.body;
+  const userId = req.user.id;
+
   try {
-    const { title, description, status } = req.body;
     const result = await pool.query(
-      `INSERT INTO testcases (title, description, status, created_by) 
-       VALUES ($1, $2, $3, $4) RETURNING *`,
-      [title, description, status, req.user.id]
+      `
+      INSERT INTO testcases
+      (suite_id, title, description, expected_result, severity, priority, created_by)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+      `,
+      [suite_id, title, description, expected_result, severity, priority, userId]
     );
-    res.json(result.rows[0]);
+
+    res.status(201).json(result.rows[0]);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: err.message });
   }
 };
 
-// Update testcase by id
+
+// UPDATE
 export const updateTestcase = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { title, description, status } = req.body;
-    const result = await pool.query(
-      `UPDATE testcases SET title=$1, description=$2, status=$3 
-       WHERE id=$4 AND created_by=$5 RETURNING *`,
-      [title, description, status, id, req.user.id]
-    );
-    if (!result.rows[0]) return res.status(404).json({ error: 'Not found' });
-    res.json(result.rows[0]);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { id } = req.params;
+  const { title } = req.body;
+
+  const result = await pool.query(
+    "UPDATE testcases SET title=$1 WHERE id=$2 RETURNING *",
+    [title, id]
+  );
+
+  res.json(result.rows[0]);
 };
 
-// Delete testcase by id
+// DELETE  ⬅️ INI YANG TADI HILANG
 export const deleteTestcase = async (req, res) => {
-  try {
-    const { id } = req.params;
-    await pool.query(
-      `DELETE FROM testcases WHERE id=$1 AND created_by=$2`,
-      [id, req.user.id]
-    );
-    res.json({ message: 'Testcase deleted' });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+  const { id } = req.params;
+
+  await pool.query(
+    "DELETE FROM testcases WHERE id=$1",
+    [id]
+  );
+
+  res.json({ message: "Testcase deleted" });
 };

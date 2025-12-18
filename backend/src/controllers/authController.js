@@ -1,20 +1,9 @@
-import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import pool from "../db/index.js";
-import dotenv from "dotenv";
 
-dotenv.config();
-
-const router = express.Router();
-
-// REGISTER
-router.post("/register", async (req, res) => {
+export async function register(req, res) {
   const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ error: "username & password required" });
-  }
 
   try {
     const hashed = await bcrypt.hash(password, 10);
@@ -28,15 +17,14 @@ router.post("/register", async (req, res) => {
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
-});
+}
 
-// LOGIN
-router.post("/login", async (req, res) => {
+export async function login(req, res) {
   const { username, password } = req.body;
 
   try {
     const result = await pool.query(
-      "SELECT * FROM users WHERE username=$1",
+      "SELECT * FROM users WHERE username = $1",
       [username]
     );
 
@@ -47,7 +35,7 @@ router.post("/login", async (req, res) => {
 
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
-      return res.status(401).json({ error: "Wrong password" });
+      return res.status(400).json({ error: "Wrong password" });
     }
 
     const token = jwt.sign(
@@ -56,10 +44,14 @@ router.post("/login", async (req, res) => {
       { expiresIn: "1d" }
     );
 
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        username: user.username
+      }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
-});
-
-export default router;
+}

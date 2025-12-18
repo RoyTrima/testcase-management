@@ -1,12 +1,15 @@
-// backend/src/routes/projectRoutes.js
-const express = require('express');
+import express from "express";
+import auth from "../middleware/auth.js";
+import {
+  getProjects,
+  getProjectById,
+  createProject,
+} from "../controllers/projectController.js";
+
 const router = express.Router();
-const projectController = require('../controllers/projectController');
 
-router.get('/', projectController.getAllProjects);
-router.get('/:id', projectController.getProjectById);
-router.post('/', projectController.createProject);
-router.put('/:id', projectController.updateProject);
-router.delete('/:id', projectController.deleteProject);
+router.get("/", auth, getProjects);
+router.get("/:id", auth, getProjectById);
+router.post("/", auth, createProject);
 
-module.exports = router;
+export default router;
