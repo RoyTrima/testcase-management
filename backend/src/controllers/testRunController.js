@@ -122,3 +122,108 @@ export const updateTestRunStatus = async (req, res) => {
     res.status(500).json({ message: "Failed to update test run status" });
   }
 };
+
+/**
+ * Get Test Run Summary
+ * GET /api/test-runs/:id/summary
+ */
+export const getTestRunSummary = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const result = await db.query(
+      `
+      SELECT
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status = 'passed')::int AS passed,
+        COUNT(*) FILTER (WHERE status = 'failed')::int AS failed,
+        COUNT(*) FILTER (WHERE status = 'blocked')::int AS blocked,
+        COUNT(*) FILTER (WHERE status = 'untested')::int AS untested
+      FROM test_run_cases
+      WHERE test_run_id = $1
+      `,
+      [id]
+    );
+
+    const summary = result.rows[0];
+
+    const progress =
+      summary.total === 0
+        ? 0
+        : Math.round(
+            ((summary.passed + summary.failed + summary.blocked) /
+              summary.total) *
+              100
+          );
+
+    res.json({
+      ...summary,
+      progress,
+    });
+  } catch (error) {
+    console.error("getTestRunSummary error:", error);
+    res.status(500).json({ message: "Failed to get test run summary" });
+  }
+};
+
+/**
+ * Complete / Lock Test Run
+ * PATCH /api/test-runs/:id/complete
+ */
+export const completeTestRun = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // pastikan test run ada & masih open
+    const run = await db.query(
+      `SELECT status FROM test_runs WHERE id = $1`,
+      [id]
+    );
+
+    if (run.rows.length === 0) {
+      return res.status(404).json({ message: "Test run not found" });
+    }
+
+    if (run.rows[0].status === "completed") {
+      return res.status(400).json({
+        message: "Test run already completed",
+      });
+    }
+
+    // optional: pastikan semua testcase sudah dieksekusi
+    const untested = await db.query(
+      `
+      SELECT COUNT(*) 
+      FROM test_run_cases
+      WHERE test_run_id = $1
+        AND status = 'untested'
+      `,
+      [id]
+    );
+
+    if (Number(untested.rows[0].count) > 0) {
+      return res.status(400).json({
+        message: "Cannot complete test run with untested cases",
+      });
+    }
+
+    const result = await db.query(
+      `
+      UPDATE test_runs
+      SET status = 'completed', updated_at = NOW()
+      WHERE id = $1
+      RETURNING *
+      `,
+      [id]
+    );
+
+    res.json({
+      message: "Test run completed",
+      data: result.rows[0],
+    });
+  } catch (error) {
+    console.error("completeTestRun error:", error);
+    res.status(500).json({ message: "Failed to complete test run" });
+  }
+};
+

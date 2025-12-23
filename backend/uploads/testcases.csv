@@ -1,0 +1,8 @@
+"id","title","expected_result"
+1,"Login success","User berhasil login"
+2,"Login valid user","User berhasil login"
+3,"Login invalid user","User berhasil login"
+6,"Login valid user","User berhasil login"
+7,"Login valid user","User berhasil login"
+8,"Login valid user","User berhasil login"
+9,"Login valid user","User berhasil login"

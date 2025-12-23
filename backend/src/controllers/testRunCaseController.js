@@ -92,6 +92,27 @@ export const updateTestRunCase = async (req, res) => {
       return res.status(400).json({ message: "Invalid status" });
     }
 
+    // 🔒 cek status test run
+    const check = await db.query(
+      `
+      SELECT tr.status
+      FROM test_run_cases trc
+      JOIN test_runs tr ON tr.id = trc.test_run_id
+      WHERE trc.id = $1
+      `,
+      [id]
+    );
+
+    if (check.rows.length === 0) {
+      return res.status(404).json({ message: "Test run case not found" });
+    }
+
+    if (check.rows[0].status === "completed") {
+      return res.status(400).json({
+        message: "Test run already completed, cannot update result",
+      });
+    }
+
     const result = await db.query(
       `
       UPDATE test_run_cases
@@ -106,10 +127,6 @@ export const updateTestRunCase = async (req, res) => {
       `,
       [status, actual_result || null, req.user.id, id]
     );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Test run case not found" });
-    }
 
     res.json(result.rows[0]);
   } catch (error) {
