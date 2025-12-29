@@ -1,23 +1,31 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 export default function AddTestcasePage({ token }) {
+  const { suiteId } = useParams(); // ✅ WAJIB
+  const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
+  const [expectedResult, setExpectedResult] = useState("");
   const [status, setStatus] = useState("draft");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const res = await fetch("/api/testcases", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, description, status })
+        body: JSON.stringify({
+          title,
+          expected_result: expectedResult,
+          status,
+          suite_id: suiteId, // ✅ INI KUNCI
+        }),
       });
 
       const data = await res.json();
@@ -26,37 +34,43 @@ export default function AddTestcasePage({ token }) {
         return;
       }
 
-      navigate("/testcases");
+      // ✅ balik ke suite testcase list
+      navigate(`/suites/${suiteId}/testcases`);
     } catch (err) {
       setError(err.message);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "50px auto" }}>
-      <h1 className="text-2xl font-bold mb-4">Add Testcase</h1>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+    <div className="tc-form">
+      <h1>Add Testcase</h1>
+
+      {error && <p className="error">{error}</p>}
+
+      <form onSubmit={handleSubmit}>
+        <label>Title</label>
         <input
-          type="text"
-          placeholder="Title"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          className="border p-2 rounded"
+          required
         />
+
+        <label>Expected Result</label>
         <textarea
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="border p-2 rounded"
+          rows={4}
+          value={expectedResult}
+          onChange={(e) => setExpectedResult(e.target.value)}
         />
-        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border p-2 rounded">
-          <option value="draft">Draft</option>
-          <option value="PASSED">PASSED</option>
-          <option value="FAILED">FAILED</option>
+
+        <label>Status</label>
+        <select value={status} onChange={(e) => setStatus(e.target.value)}>
+          <option value="TODO">Draft</option>
+          <option value="PASSED">Passed</option>
+          <option value="FAILED">Failed</option>
         </select>
-        <button type="submit" className="bg-blue-500 text-white p-2 rounded mt-2">
-          Add
+
+        <button type="submit" className="primary">
+          Add Testcase
         </button>
       </form>
     </div>

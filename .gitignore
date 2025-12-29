@@ -1,2 +1,13 @@
+# macOS
 .DS_Store
-.DS_Store
+
+# Node
+node_modules
+backend/node_modules
+
+# Env
+.env
+backend/.env
+
+backend/uploads/*.csv
+
