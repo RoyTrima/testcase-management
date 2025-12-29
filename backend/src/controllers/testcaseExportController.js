@@ -10,7 +10,7 @@ export const exportTestcases = async (req, res) => {
       SELECT
         id,
         title,
-        expected_result
+        COALESCE(expected_result, '') AS expected_result
       FROM testcases
       ORDER BY id
     `);

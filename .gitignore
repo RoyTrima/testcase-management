@@ -8,3 +8,6 @@ backend/node_modules
 # Env
 .env
 backend/.env
+
+backend/uploads/*.csv
+

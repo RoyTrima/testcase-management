@@ -51,24 +51,33 @@ export const createTestcase = async (req, res) => {
 // UPDATE
 export const updateTestcase = async (req, res) => {
   const { id } = req.params;
-  const { title } = req.body;
+  const { title, expected_result, status } = req.body;
 
   const result = await pool.query(
-    "UPDATE testcases SET title=$1 WHERE id=$2 RETURNING *",
-    [title, id]
+    `UPDATE testcases
+     SET title = $1,
+         expected_result = $2,
+         status = $3
+     WHERE id = $4
+     RETURNING *`,
+    [title, expected_result, status, id]
   );
 
   res.json(result.rows[0]);
 };
 
-// DELETE  ⬅️ INI YANG TADI HILANG
+
+//  Delete
 export const deleteTestcase = async (req, res) => {
   const { id } = req.params;
 
-  await pool.query(
-    "DELETE FROM testcases WHERE id=$1",
-    [id]
-  );
-
-  res.json({ message: "Testcase deleted" });
+  try {
+    await pool.query(
+      "DELETE FROM testcases WHERE id = $1",
+      [id]
+    );
+    res.json({ message: "Testcase deleted" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };

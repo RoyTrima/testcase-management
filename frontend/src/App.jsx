@@ -24,14 +24,32 @@ export default function App() {
       <Route path="/projects" element={<ProjectsPage token={token} />} />
 
       {/* step 2: suite list */}
-      <Route path="/projects/:projectId/suites" element={<SuitesPage token={token} />} />
+      <Route
+        path="/projects/:projectId/suites"
+        element={<SuitesPage token={token} />}
+      />
 
       {/* step 3: testcase list */}
-      <Route path="/suites/:suiteId/testcases" element={<TestcasesPage token={token} />} />
+      <Route
+        path="/suites/:suiteId/testcases"
+        element={<TestcasesPage token={token} />}
+      />
+
+      {/* ALIAS UNTUK DEV / MVP */}
+      <Route
+        path="/testcases"
+        element={<TestcasesPage token={token} />}
+      />
 
       {/* add/edit testcase */}
-      <Route path="/suites/:suiteId/testcases/add" element={<AddTestcasePage token={token} />} />
-      <Route path="/suites/:suiteId/testcases/edit/:testcaseId" element={<EditTestcasePage token={token} />} />
+      <Route
+        path="/suites/:suiteId/testcases/add"
+        element={<AddTestcasePage token={token} />}
+      />
+      <Route
+        path="/suites/:suiteId/testcases/edit/:testcaseId"
+        element={<EditTestcasePage token={token} />}
+      />
     </Routes>
   );
 }
